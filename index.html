@@ -44,9 +44,10 @@
 				<div class="columns">
 					<div class="column is-3">
 						<a
-							@click="isFormDisplayed = !isFormDisplayed"
+							@click="toggleFormDisplay"
 							class="button is-primary is-block is-alt is-large"
 							href="#"
+							v-if="!isFormDisplayed"
 							>New Activity</a
 						>
 						<div class="create-form" v-if="isFormDisplayed">
@@ -63,9 +64,26 @@
 										/>
 									</div>
 								</div>
+								<div class="field">
+									<label class="label">Notes</label>
+									<div class="control">
+										<textarea
+											class="textarea"
+											placeholder="Write some notes here..."
+											v-model="newActivity.notes"
+										></textarea>
+									</div>
+								</div>
 								<div class="field is-grouped">
 									<div class="control">
-										<button class="button is-link">Create Activity</button>
+										<button class="button is-link" @click="createActivity">
+											Create Activity
+										</button>
+									</div>
+									<div class="control">
+										<button class="button is-text" @click="toggleFormDisplay">
+											Cancel
+										</button>
 									</div>
 								</div>
 							</form>
@@ -92,6 +110,7 @@
 					isFormDisplayed: false,
 					newActivity: {
 						title: "",
+						notes: "",
 					},
 					user: {
 						name: "Filip Jerga",
@@ -99,7 +118,7 @@
 					},
 					activities: {
 						"1546968934": {
-							id: '1546968934',
+							id: "1546968934",
 							title: "Learn Vue.js",
 							notes: "I started today and it was not good.",
 							progress: 0,
@@ -108,7 +127,7 @@
 							updatedAt: 1546969144391,
 						},
 						"1546969212": {
-							id: '1546969212',
+							id: "1546969212",
 							title: "Read Witcher Books",
 							notes: "These books are super nice",
 							progress: 0,
@@ -122,7 +141,14 @@
 						"1546969225": { text: "movies" },
 					},
 				},
-				methods: {},
+				methods: {
+					toggleFormDisplay() {
+						this.isFormDisplayed = !this.isFormDisplayed;
+					},
+					createActivity() {
+						console.log(this.newActivity);
+					},
+				},
 			});
 		</script>
 	</body>
