@@ -3,7 +3,7 @@
     <nav class="navbar is-white topNav">
       <div class="container">
         <div class="navbar-brand">
-          <h1>Activity Planner</h1>
+          <h1>{{ fullAppName }}</h1>
         </div>
       </div>
     </nav>
@@ -21,51 +21,10 @@
     <section class="container">
       <div class="columns">
         <div class="column is-3">
-          <a
-            v-if="!isFormDisplayed"
-            class="button is-primary is-block is-alt is-large"
-            href="#"
-            @click="toggleFormDisplay"
-            >New Activity</a
-          >
-          <div v-if="isFormDisplayed" class="create-form">
-            <h2>Create Activity</h2>
-            <form>
-              <div class="field">
-                <label class="label">Title</label>
-                <div class="control">
-                  <input
-                    v-model="newActivity.title"
-                    class="input"
-                    type="text"
-                    placeholder="Read a Book"
-                  />
-                </div>
-              </div>
-              <div class="field">
-                <label class="label">Notes</label>
-                <div class="control">
-                  <textarea
-                    v-model="newActivity.notes"
-                    class="textarea"
-                    placeholder="Write some notes here..."
-                  ></textarea>
-                </div>
-              </div>
-              <div class="field is-grouped">
-                <div class="control">
-                  <button class="button is-link" @click="createActivity">
-                    Create Activity
-                  </button>
-                </div>
-                <div class="control">
-                  <button class="button is-text" @click="toggleFormDisplay">
-                    Cancel
-                  </button>
-                </div>
-              </div>
-            </form>
-          </div>
+          <ActivityCreate
+            :categories="categories"
+            @activityCreated="addActivity"
+          />
         </div>
         <div class="column is-9">
           <div class="box content">
@@ -74,6 +33,10 @@
               :key="activity.id"
               :activity="activity"
             />
+            <div class="activity-length">
+              Currently {{ activityLength }} activities
+            </div>
+            <div class="activity-motivation">{{ activityMotivation }}</div>
           </div>
         </div>
       </div>
@@ -83,39 +46,48 @@
 
 <script>
 import ActivityItem from "@/components/ActivityItem.vue";
-import { fetchActivities } from "@/api";
+import ActivityCreate from "@/components/ActivityCreate.vue";
+import { fetchActivities, fetchUser, fetchCategories } from "@/api";
 
 export default {
   name: "App",
   components: {
     ActivityItem,
+    ActivityCreate,
   },
   data() {
     return {
-      isFormDisplayed: false,
-      newActivity: {
-        title: "",
-        notes: "",
-      },
-      user: {
-        name: "Filip Jerga",
-        id: "-Aj34jknvncx98812",
-      },
+      creator: "John Doe",
+      appName: "Activity Planner",
+      user: {},
       activities: {},
-      categories: {
-        "1546969049": { text: "books" },
-        "1546969225": { text: "movies" },
-      },
+      categories: {},
     };
+  },
+  computed: {
+    fullAppName() {
+      return this.appName + " by " + this.creator;
+    },
+    activityLength() {
+      return Object.keys(this.activities).length;
+    },
+    activityMotivation() {
+      if (this.activityLength && this.activityLength < 5) {
+        return "Nice to see some activities :|";
+      } else if (this.activityLength >= 5) {
+        return "So many activities! Good Job! :)";
+      } else {
+        return "No ativities, so sad :(";
+      }
+    },
   },
   created() {
     this.activities = fetchActivities();
+    this.user = fetchUser();
+    this.categories = fetchCategories();
   },
   methods: {
-    toggleFormDisplay() {
-      this.isFormDisplayed = !this.isFormDisplayed;
-    },
-    createActivity() {},
+    addActivity(newActivity) {},
   },
 };
 </script>
@@ -136,6 +108,15 @@ body {
 footer {
   background-color: #f2f6fa !important;
 }
+
+.activity-motivation {
+  float: right;
+}
+
+.activity-length {
+  display: inline-block;
+}
+
 .topNav {
   border-top: 5px solid #3498db;
 }
