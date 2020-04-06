@@ -36,9 +36,12 @@
           <div class="control">
             <select v-model="newActivity.category" class="select">
               <option disabled value="">Please select one</option>
-              <option v-for="category in categories" :key="category.id">{{
-                category.text
-              }}</option>
+              <option
+                v-for="category in categories"
+                :key="category.id"
+                :value="category.id"
+                >{{ category.text }}</option
+              >
             </select>
           </div>
         </div>
@@ -64,7 +67,7 @@
 </template>
 
 <script>
-import { createActivity } from "@/api";
+import { createActivityAPI } from "@/api";
 
 export default {
   props: {
@@ -85,16 +88,27 @@ export default {
   },
   computed: {
     isFormValid() {
-      return this.newActivity.title && this.newActivity.notes;
+      return (
+        this.newActivity.title &&
+        this.newActivity.notes &&
+        this.newActivity.category
+      );
     },
   },
   methods: {
     toggleFormDisplay() {
       this.isFormDisplayed = !this.isFormDisplayed;
     },
+    resetActivity() {
+      this.newActivity.title = "";
+      this.newActivity.notes = "";
+      this.newActivity.category = "";
+    },
     createActivity() {
-      createActivity(this.newActivity).then((activity) => {
-        this.$emit("activityCreated", activity);
+      createActivityAPI(this.newActivity).then((activity) => {
+        this.resetActivity();
+        this.isFormDisplayed = false;
+        this.$emit("activityCreated", { ...activity });
       });
     },
   },
