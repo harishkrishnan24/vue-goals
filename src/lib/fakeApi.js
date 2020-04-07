@@ -7,7 +7,7 @@ const data = {
       progress: 0,
       category: "1546969049",
       createdAt: 1546969144391,
-      updatedAt: 1546969144391,
+      updatedAt: 1546969144391
     },
     "1546969212": {
       id: "1546969212",
@@ -16,13 +16,13 @@ const data = {
       progress: 50,
       category: "1546969049",
       createdAt: 1546969144391,
-      updatedAt: 1546969144391,
-    },
+      updatedAt: 1546969144391
+    }
   },
   categories: {
     "1546969049": { text: "books", id: "1546969049" },
-    "1546969225": { text: "movies", id: "1546969225" },
-  },
+    "1546969225": { text: "movies", id: "1546969225" }
+  }
 };
 
 class FakeApi {
@@ -36,13 +36,13 @@ class FakeApi {
 
   get(resource, { force = 0 }) {
     return new Promise((resolve, reject) => {
-      setTimeout(() => {
+      this.asyncCall(() => {
         if (force || this.canContinue()) {
           resolve({ ...data[resource] });
         } else {
           reject("Cannot fetch " + resource);
         }
-      }, 1000);
+      });
     });
   }
 
@@ -51,6 +51,17 @@ class FakeApi {
       data[resource][item.id] = payload;
       resolve(payload);
     });
+  }
+
+  delete(resource, item) {
+    return new Promise((resolve, reject) => {
+      delete data[resource][item.id];
+      resolve(item);
+    });
+  }
+
+  asyncCall(cb) {
+    setTimeout(cb, 1000);
   }
 }
 

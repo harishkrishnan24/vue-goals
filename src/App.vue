@@ -29,6 +29,7 @@
                 :key="activity.id"
                 :activity="activity"
                 :categories="categories"
+                @activityDeleted="handleActivityDelete"
               />
               <div v-if="!isFetching">
                 <div class="activity-length">
@@ -47,7 +48,12 @@
 <script>
 import ActivityItem from "@/components/ActivityItem.vue";
 import ActivityCreate from "@/components/ActivityCreate.vue";
-import { fetchActivities, fetchUser, fetchCategories } from "@/api";
+import {
+  fetchActivities,
+  fetchUser,
+  fetchCategories,
+  deleteActivityAPI
+} from "@/api";
 import Vue from "vue";
 import TheNavbar from "@/components/TheNavbar";
 
@@ -56,7 +62,7 @@ export default {
   components: {
     ActivityItem,
     ActivityCreate,
-    TheNavbar,
+    TheNavbar
   },
   data() {
     return {
@@ -66,7 +72,7 @@ export default {
       error: null,
       user: {},
       activities: null,
-      categories: null,
+      categories: null
     };
   },
   computed: {
@@ -87,21 +93,21 @@ export default {
     },
     isDataLoaded() {
       return this.activities && this.categories;
-    },
+    }
   },
   created() {
     this.isFetching = true;
     fetchActivities()
-      .then((activities) => {
+      .then(activities => {
         this.activities = activities;
         this.isFetching = false;
       })
-      .catch((err) => {
+      .catch(err => {
         this.error = err;
         this.isFetching = false;
       });
     this.user = fetchUser();
-    fetchCategories().then((categories) => {
+    fetchCategories().then(categories => {
       this.categories = categories;
     });
   },
@@ -110,7 +116,12 @@ export default {
       // this.activities[newActivity.id] = newActivity;
       Vue.set(this.activities, newActivity.id, newActivity);
     },
-  },
+    handleActivityDelete(activity) {
+      deleteActivityAPI(activity).then(deletedActivity => {
+        Vue.delete(this.activities, deletedActivity.id);
+      });
+    }
+  }
 };
 </script>
 

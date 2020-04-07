@@ -8,10 +8,10 @@ export const fetchCategories = () => fakeApi.get("categories", { force: 1 });
 
 export const fetchUser = () => ({
   name: "Filip Jerga",
-  id: "-Aj34jknvncx98812",
+  id: "-Aj34jknvncx98812"
 });
 
-export const createActivityAPI = (activity) => {
+export const createActivityAPI = activity => {
   activity.id = generateUid();
   activity.progress = 0;
   activity.createdAt = new Date();
@@ -19,3 +19,6 @@ export const createActivityAPI = (activity) => {
 
   return fakeApi.post("activities", activity);
 };
+
+export const deleteActivityAPI = activity =>
+  fakeApi.delete("activities", activity);
