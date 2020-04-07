@@ -44,6 +44,16 @@ const store = {
 
     return fakeApi.post("activities", activity).then(createdActivity => {
       this.setItem("activities", createdActivity.id, createdActivity);
+      return createdActivity;
+    });
+  },
+
+  updateActivity(activity) {
+    activity.updatedAt = new Date();
+
+    return fakeApi.post("activities", activity).then(updatedActivity => {
+      this.setItem("activities", updatedActivity.id, updatedActivity);
+      return updatedActivity;
     });
   },
 

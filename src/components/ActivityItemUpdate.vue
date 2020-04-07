@@ -1,14 +1,14 @@
 <template>
   <article class="post">
     <div class="activity-title">
-      <input v-model="activity.title" type="text" class="input" />
       <i
         class="fas fa-cog activity-settings"
         @click="isMenuDisplayed = !isMenuDisplayed"
       />
+      <input v-model="modifiedActivity.title" type="text" class="input" />
     </div>
     <div class="activity-category">
-      <select v-model="activity.category" class="select">
+      <select v-model="modifiedActivity.category" class="select">
         <option disabled value="">Please select one</option>
         <option
           v-for="category in categories"
@@ -20,7 +20,7 @@
     </div>
     <div class="control activity-notes">
       <textarea
-        v-model="activity.notes"
+        v-model="modifiedActivity.notes"
         class="textarea"
         placeholder="Write some notes here"
       />
@@ -35,14 +35,14 @@
         <div class="content">
           <p>
             <a href="#">Filip Jerga</a> updated
-            {{ activity.updatedAt | prettyTime }} &nbsp;
+            {{ modifiedActivity.updatedAt | prettyTime }} &nbsp;
           </p>
         </div>
       </div>
       <div class="media-right">
         <input
           id="progress"
-          v-model="activity.progress"
+          v-model="modifiedActivity.progress"
           type="range"
           name="progress"
           min="0"
@@ -50,7 +50,7 @@
           value="90"
           step="10"
         />
-        <label for="progress">{{ activity.progress }}%</label>
+        <label for="progress">{{ modifiedActivity.progress }}%</label>
       </div>
     </div>
     <div v-if="isMenuDisplayed" class="activity-control">
@@ -63,6 +63,7 @@
 </template>
 <script>
 import textUtility from "@/mixins/textUtility";
+import store from "@/store";
 
 export default {
   mixins: [textUtility],
@@ -78,17 +79,25 @@ export default {
   },
   data() {
     return {
-      isMenuDisplayed: false
+      isMenuDisplayed: true,
+      modifiedActivity: { ...this.activity }
     };
   },
   methods: {
-    updateActivity() {}
+    updateActivity() {
+      store.updateActivity(this.modifiedActivity).then(() => {
+        this.$emit("toggleUpdate", false);
+      });
+    }
   }
 };
 </script>
 <style lang="scss" scoped>
 .activity-title {
   margin-bottom: 10px;
+  > i {
+    margin-bottom: 10px;
+  }
 }
 .activity-category {
   margin-bottom: 10px;
