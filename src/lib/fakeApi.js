@@ -34,10 +34,24 @@ class FakeApi {
     return false;
   }
 
+  commitData(data) {
+    localStorage.setItem("activity_data", JSON.stringify(data));
+  }
+
+  fillDB() {
+    this.commitData(data);
+  }
+
+  getData() {
+    const activityData = localStorage.getItem("activity_data");
+    return JSON.parse(activityData);
+  }
+
   get(resource, { force = 0 }) {
     return new Promise((resolve, reject) => {
       this.asyncCall(() => {
         if (force || this.canContinue()) {
+          const data = this.getData();
           resolve({ ...data[resource] });
         } else {
           reject("Cannot fetch " + resource);
@@ -48,14 +62,18 @@ class FakeApi {
 
   post(resource, payload) {
     return new Promise((resolve, reject) => {
-      data[resource][item.id] = payload;
+      const data = this.getData();
+      data[resource][payload.id] = payload;
+      this.commitData(data);
       resolve(payload);
     });
   }
 
   delete(resource, item) {
     return new Promise((resolve, reject) => {
+      const data = this.getData();
       delete data[resource][item.id];
+      this.commitData(data);
       resolve(item);
     });
   }

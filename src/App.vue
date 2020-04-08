@@ -1,5 +1,5 @@
 <template>
-  <div v-if="isDataLoaded" id="activityApp">
+  <div id="activityApp">
     <nav class="navbar is-white topNav">
       <div class="container">
         <div class="navbar-brand">
@@ -21,12 +21,14 @@
             <div v-if="error">{{ error }}</div>
             <div v-else>
               <div v-if="isFetching">Loading...</div>
-              <ActivityItem
-                v-for="activity in activities"
-                :key="activity.id"
-                :activity="activity"
-                :categories="categories"
-              />
+              <div v-if="isDataLoaded">
+                <ActivityItem
+                  v-for="activity in activities"
+                  :key="activity.id"
+                  :activity="activity"
+                  :categories="categories"
+                />
+              </div>
               <div v-if="!isFetching">
                 <div class="activity-length">
                   Currently {{ activityLength }} activities
@@ -44,12 +46,6 @@
 <script>
 import ActivityItem from "@/components/ActivityItem.vue";
 import ActivityCreate from "@/components/ActivityCreate.vue";
-// import {
-//   fetchActivities,
-//   fetchUser,
-//   fetchCategories,
-//   deleteActivityAPI
-// } from "@/api";
 import Vue from "vue";
 import TheNavbar from "@/components/TheNavbar";
 import store from "./store";
