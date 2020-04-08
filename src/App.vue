@@ -7,7 +7,7 @@
         </div>
       </div>
     </nav>
-    <TheNavbar />
+    <TheNavbar @filterSelected="setFilter" />
     <section class="container">
       <div class="columns">
         <div class="column is-3">
@@ -23,7 +23,7 @@
               <div v-if="isFetching">Loading...</div>
               <div v-if="isDataLoaded">
                 <ActivityItem
-                  v-for="activity in activities"
+                  v-for="activity in filteredActivities"
                   :key="activity.id"
                   :activity="activity"
                   :categories="categories"
@@ -68,7 +68,8 @@ export default {
       error: null,
       user: {},
       activities,
-      categories
+      categories,
+      filter: "all"
     };
   },
   computed: {
@@ -95,6 +96,22 @@ export default {
     },
     isDataLoaded() {
       return this.activitiesLength && this.categoriesLength;
+    },
+    filteredActivities() {
+      let filteredActivities = {};
+      let condition;
+      if (this.filter === "all") {
+        return this.activities;
+      } else if (this.filter === "inprogress") {
+        condition = value => value > 0 && value < 100;
+      } else if (this.filter === "finished") {
+        condition = value => value === 100;
+      } else if (this.filter === "notstarted") {
+        condition = value => value === 0;
+      }
+      return Object.values(this.activities).filter(activity => {
+        return condition(activity.progress);
+      });
     }
   },
   created() {
@@ -110,6 +127,11 @@ export default {
       });
     this.user = store.fetchUser();
     store.fetchCategories().then(categories => {});
+  },
+  methods: {
+    setFilter(filterOption) {
+      this.filter = filterOption;
+    }
   }
 };
 </script>
